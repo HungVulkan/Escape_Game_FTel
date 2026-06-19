@@ -4,27 +4,12 @@
 /* ============================ Global Context ================================= */
 escape_game_context_t g_escape_game = {0};
 
-/* ============================ FeTel@HCMUS Logo (Pixel Art) ==================== */
-// Logo stored as binary bitmap for OLED display (128x32 or similar)
-// This represents the "fetel@HCMUS KHOA ĐIỆN TỬ - VIỄN THÔNG" logo
-static const uint8_t fetel_logo_bitmap[] = {
-    // Row 0-3: Top border and title "fetel@HCMUS"
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-    
-    // Row 4-7: Logo text area - "fetel@HCMUS"
-    // Simplified representation using block characters
-    0x80, 0xFC, 0x0C, 0xFC, 0x84, 0xFC, 0x84, 0xFC, 0x04, 0xFC, 0x04, 0xFC, 0x00, 0x00, 0x00, 0x01,
-    0x80, 0xFC, 0x0C, 0xFC, 0x84, 0xFC, 0x84, 0xFC, 0x04, 0xFC, 0x04, 0xFC, 0x00, 0x00, 0x00, 0x01,
-    
-    // Row 8-11: Subtitle "KHOA ĐIỆN TỬ - VIỄN THÔNG"
-    0x80, 0x00, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0x00, 0x00, 0x00, 0x01,
-    0x80, 0x00, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0x00, 0x00, 0x00, 0x01,
-    
-    // Row 12-15: Bottom border
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
+/* ============================ Embedded Software Logo (ASCII Art) ============= */
+// Embedded Software ASCII Logo representation
+#define EMBEDDED_LOGO_LINE1 "    /--\\  /--\\  /--\\ "
+#define EMBEDDED_LOGO_LINE2 "   /(__)\\(  )(  ) "
+#define EMBEDDED_LOGO_LINE3 "  (__)(__)(__)(__)    "
+#define EMBEDDED_LOGO_LINE4 "Embedded Software"
 
 /* ============================ Forward Declarations ============================ */
 static void escape_menu_state_transition(menu_state_t new_state);
@@ -46,14 +31,16 @@ void escape_menu_logo_enter(void) {
 }
 
 static void escape_menu_logo_render(void) {
-    // Display FeTel@HCMUS logo with text
+    // Display FeTel@HCMUS logo with Embedded Software ASCII art
     AK_LOG_INFO("Menu", "╔════════════════════════════════════════════╗");
     AK_LOG_INFO("Menu", "║                                            ║");
     AK_LOG_INFO("Menu", "║          fetel@HCMUS                       ║");
     AK_LOG_INFO("Menu", "║   KHOA ĐIỆN TỬ - VIỄN THÔNG               ║");
     AK_LOG_INFO("Menu", "║                                            ║");
-    AK_LOG_INFO("Menu", "║      Escape Game Project                   ║");
-    AK_LOG_INFO("Menu", "║   Building with STM32L151 MCU              ║");
+    AK_LOG_INFO("Menu", "║      /--\\  /--\\  /--\\                  ║");
+    AK_LOG_INFO("Menu", "║     /(__)\\(  )(  )                      ║");
+    AK_LOG_INFO("Menu", "║    (__)(__)(__)(__)                       ║");
+    AK_LOG_INFO("Menu", "║  Embedded Software                        ║");
     AK_LOG_INFO("Menu", "║                                            ║");
     AK_LOG_INFO("Menu", "║         Loading...                         ║");
     AK_LOG_INFO("Menu", "╚════════════════════════════════════════════╝");
@@ -168,7 +155,6 @@ static void escape_menu_about_render(void) {
     AK_LOG_INFO("Menu", "║         ABOUT THIS GAME            ║");
     AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
     AK_LOG_INFO("Menu", "║                                    ║");
-    AK_LOG_INFO("Menu", "║  Project: Escape Game FTel         ║");
     AK_LOG_INFO("Menu", "║  Platform: AK Embedded Base Kit    ║");
     AK_LOG_INFO("Menu", "║  MCU: STM32L151CBT6                ║");
     AK_LOG_INFO("Menu", "║  Display: OLED 1.54\" (SSD1309)    ║");

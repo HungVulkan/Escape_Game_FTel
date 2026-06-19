@@ -4,6 +4,28 @@
 /* ============================ Global Context ================================= */
 escape_game_context_t g_escape_game = {0};
 
+/* ============================ FeTel@HCMUS Logo (Pixel Art) ==================== */
+// Logo stored as binary bitmap for OLED display (128x32 or similar)
+// This represents the "fetel@HCMUS KHOA ĐIỆN TỬ - VIỄN THÔNG" logo
+static const uint8_t fetel_logo_bitmap[] = {
+    // Row 0-3: Top border and title "fetel@HCMUS"
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+    
+    // Row 4-7: Logo text area - "fetel@HCMUS"
+    // Simplified representation using block characters
+    0x80, 0xFC, 0x0C, 0xFC, 0x84, 0xFC, 0x84, 0xFC, 0x04, 0xFC, 0x04, 0xFC, 0x00, 0x00, 0x00, 0x01,
+    0x80, 0xFC, 0x0C, 0xFC, 0x84, 0xFC, 0x84, 0xFC, 0x04, 0xFC, 0x04, 0xFC, 0x00, 0x00, 0x00, 0x01,
+    
+    // Row 8-11: Subtitle "KHOA ĐIỆN TỬ - VIỄN THÔNG"
+    0x80, 0x00, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0x00, 0x00, 0x00, 0x01,
+    0x80, 0x00, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0x00, 0x00, 0x00, 0x01,
+    
+    // Row 12-15: Bottom border
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
 /* ============================ Forward Declarations ============================ */
 static void escape_menu_state_transition(menu_state_t new_state);
 static void escape_menu_logo_render(void);
@@ -15,14 +37,32 @@ static void escape_menu_game_pause_render(void);
 static void escape_menu_game_over_render(void);
 
 /* ============================ Logo Screen ==================================== */
+static uint32_t logo_display_time = 0;
+#define LOGO_DISPLAY_DURATION_MS 3000  // Show logo for 3 seconds
+
 void escape_menu_logo_enter(void) {
-    AK_LOG_INFO("Menu", "Logo screen entered");
+    logo_display_time = ak_sys_get_tick();
+    AK_LOG_INFO("Menu", "Logo screen entered - FeTel@HCMUS");
 }
 
 static void escape_menu_logo_render(void) {
-    // Display logo (requires OLED driver)
-    // Using pixel art conversion tool for "Nó Thần" logo
-    AK_LOG_INFO("Menu", "Rendering Logo Screen");
+    // Display FeTel@HCMUS logo with text
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║                                            ║");
+    AK_LOG_INFO("Menu", "║          fetel@HCMUS                       ║");
+    AK_LOG_INFO("Menu", "║   KHOA ĐIỆN TỬ - VIỄN THÔNG               ║");
+    AK_LOG_INFO("Menu", "║                                            ║");
+    AK_LOG_INFO("Menu", "║      Escape Game Project                   ║");
+    AK_LOG_INFO("Menu", "║   Building with STM32L151 MCU              ║");
+    AK_LOG_INFO("Menu", "║                                            ║");
+    AK_LOG_INFO("Menu", "║         Loading...                         ║");
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════════════╝");
+    
+    // Check if logo display time has elapsed
+    uint32_t current_time = ak_sys_get_tick();
+    if ((current_time - logo_display_time) >= LOGO_DISPLAY_DURATION_MS) {
+        escape_menu_state_transition(MENU_STATE_MAIN);
+    }
 }
 
 /* ============================ Main Menu Screen ================================ */
@@ -47,12 +87,17 @@ void escape_menu_main_enter(void) {
 }
 
 static void escape_menu_main_render(void) {
-    AK_LOG_INFO("Menu", "====== %s ======", main_menu_screen.title);
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║    C0 LOA ESCAPE                   ║");
+    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
     
     for (uint8_t i = 0; i < main_menu_screen.item_count; i++) {
-        char prefix = (i == main_menu_screen.selected_index) ? '>' : ' ';
-        AK_LOG_INFO("Menu", "%c %s", prefix, main_menu_screen.items[i].label);
+        char prefix = (i == main_menu_screen.selected_index) ? '►' : ' ';
+        AK_LOG_INFO("Menu", "║ %c %-32s ║", prefix, main_menu_screen.items[i].label);
     }
+    
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
+    AK_LOG_INFO("Menu", "Use UP/DOWN to navigate, SEL to confirm");
 }
 
 /* ============================ Settings Menu ================================== */
@@ -79,34 +124,38 @@ void escape_menu_settings_enter(void) {
 }
 
 static void escape_menu_settings_render(void) {
-    AK_LOG_INFO("Menu", "====== %s ======", settings_menu_screen.title);
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║         SETTINGS                   ║");
+    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
     
     for (uint8_t i = 0; i < settings_menu_screen.item_count; i++) {
-        char prefix = (i == settings_menu_screen.selected_index) ? '>' : ' ';
+        char prefix = (i == settings_menu_screen.selected_index) ? '►' : ' ';
         
         switch (i) {
             case 0:
-                AK_LOG_INFO("Menu", "%c Difficulty: %s", prefix, 
+                AK_LOG_INFO("Menu", "║ %c Difficulty: %-16s ║", prefix, 
                     g_escape_game.settings.difficulty == 0 ? "Easy" :
                     g_escape_game.settings.difficulty == 1 ? "Normal" : "Hard");
                 break;
             case 1:
-                AK_LOG_INFO("Menu", "%c Sound: %s", prefix,
+                AK_LOG_INFO("Menu", "║ %c Sound: %-23s ║", prefix,
                     g_escape_game.settings.sound_enabled ? "ON" : "OFF");
                 break;
             case 2:
-                AK_LOG_INFO("Menu", "%c Brightness: %u%%", prefix,
+                AK_LOG_INFO("Menu", "║ %c Brightness: %-18u%% ║", prefix,
                     g_escape_game.settings.brightness);
                 break;
             case 3:
-                AK_LOG_INFO("Menu", "%c Contrast: %u%%", prefix,
+                AK_LOG_INFO("Menu", "║ %c Contrast: %-20u%% ║", prefix,
                     g_escape_game.settings.contrast);
                 break;
             case 4:
-                AK_LOG_INFO("Menu", "%c %s", prefix, settings_menu_items[i].label);
+                AK_LOG_INFO("Menu", "║ %c %-32s ║", prefix, settings_menu_items[i].label);
                 break;
         }
     }
+    
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
 }
 
 /* ============================ About Menu ===================================== */
@@ -115,11 +164,20 @@ void escape_menu_about_enter(void) {
 }
 
 static void escape_menu_about_render(void) {
-    AK_LOG_INFO("Menu", "====== ABOUT ======");
-    AK_LOG_INFO("Menu", "Escape Game FTel");
-    AK_LOG_INFO("Menu", "Building game using");
-    AK_LOG_INFO("Menu", "AK Embedded Base Kit");
-    AK_LOG_INFO("Menu", "STM32L151 MCU");
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║         ABOUT THIS GAME            ║");
+    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "║  Project: Escape Game FTel         ║");
+    AK_LOG_INFO("Menu", "║  Platform: AK Embedded Base Kit    ║");
+    AK_LOG_INFO("Menu", "║  MCU: STM32L151CBT6                ║");
+    AK_LOG_INFO("Menu", "║  Display: OLED 1.54\" (SSD1309)    ║");
+    AK_LOG_INFO("Menu", "║  Learning: FTel Embedded Bootcamp  ║");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "║  fetel@HCMUS                       ║");
+    AK_LOG_INFO("Menu", "║  KHOA ĐIỆN TỬ - VIỄN THÔNG       ║");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
 }
 
 /* ============================ Game Start Screen ============================== */
@@ -142,10 +200,13 @@ static void escape_menu_game_running_render(void) {
     uint32_t elapsed = ak_sys_get_tick() - g_escape_game.game_start_time;
     uint16_t remaining = (elapsed / 1000 < 300) ? (300 - elapsed / 1000) : 0;
     
-    AK_LOG_INFO("Game", "====== ESCAPE GAME ======");
-    AK_LOG_INFO("Game", "Time: %u sec", remaining);
-    AK_LOG_INFO("Game", "Lives: %u", g_escape_game.player_lives);
-    AK_LOG_INFO("Game", "Score: %u", g_escape_game.player_score);
+    AK_LOG_INFO("Game", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Game", "║     ESCAPE GAME - IN PROGRESS      ║");
+    AK_LOG_INFO("Game", "╠════════════════════════════════════╣");
+    AK_LOG_INFO("Game", "║ Time:  %3u sec                     ║", remaining);
+    AK_LOG_INFO("Game", "║ Lives: %u                          ║", g_escape_game.player_lives);
+    AK_LOG_INFO("Game", "║ Score: %u                          ║", g_escape_game.player_score);
+    AK_LOG_INFO("Game", "╚════════════════════════════════════╝");
 }
 
 /* ============================ Game Pause Screen ============================== */
@@ -155,9 +216,14 @@ void escape_menu_game_pause_enter(void) {
 }
 
 static void escape_menu_game_pause_render(void) {
-    AK_LOG_INFO("Menu", "====== PAUSED ======");
-    AK_LOG_INFO("Menu", "Press SEL to Resume");
-    AK_LOG_INFO("Menu", "Press HOME to Exit");
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║           GAME PAUSED              ║");
+    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "║   Press SEL to Resume              ║");
+    AK_LOG_INFO("Menu", "║   Press HOME to Return to Menu     ║");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
 }
 
 /* ============================ Game Over Screen ================================ */
@@ -167,9 +233,15 @@ void escape_menu_game_over_enter(void) {
 }
 
 static void escape_menu_game_over_render(void) {
-    AK_LOG_INFO("Menu", "====== GAME OVER ======");
-    AK_LOG_INFO("Menu", "Score: %u", g_escape_game.player_score);
-    AK_LOG_INFO("Menu", "Press SEL to Continue");
+    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
+    AK_LOG_INFO("Menu", "║         GAME OVER                  ║");
+    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "║  Final Score: %u                   ║", g_escape_game.player_score);
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "║  Press SEL to Continue             ║");
+    AK_LOG_INFO("Menu", "║                                    ║");
+    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
 }
 
 /* ============================ Menu Callbacks ================================== */
@@ -337,12 +409,12 @@ void escape_menu_init(void) {
     g_escape_game.settings.brightness = 100;     // 100%
     g_escape_game.settings.contrast = 100;       // 100%
     
-    // Set initial state
+    // Set initial state to LOGO
     g_escape_game.current_state = MENU_STATE_LOGO;
     g_escape_game.current_screen = NULL;
     
-    AK_LOG_INFO("Menu", "Menu system initialized");
+    AK_LOG_INFO("Menu", "Menu system initialized - Starting with FeTel@HCMUS logo");
     
-    // Transition to main menu
-    escape_menu_state_transition(MENU_STATE_MAIN);
+    // Transition to logo screen first
+    escape_menu_state_transition(MENU_STATE_LOGO);
 }

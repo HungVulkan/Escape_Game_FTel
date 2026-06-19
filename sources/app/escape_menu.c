@@ -145,27 +145,6 @@ static void escape_menu_settings_render(void) {
     AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
 }
 
-/* ============================ About Menu ===================================== */
-void escape_menu_about_enter(void) {
-    AK_LOG_INFO("Menu", "About menu entered");
-}
-
-static void escape_menu_about_render(void) {
-    AK_LOG_INFO("Menu", "╔════════════════════════════════════╗");
-    AK_LOG_INFO("Menu", "║         ABOUT THIS GAME            ║");
-    AK_LOG_INFO("Menu", "╠════════════════════════════════════╣");
-    AK_LOG_INFO("Menu", "║                                    ║");
-    AK_LOG_INFO("Menu", "║  Platform: AK Embedded Base Kit    ║");
-    AK_LOG_INFO("Menu", "║  MCU: STM32L151CBT6                ║");
-    AK_LOG_INFO("Menu", "║  Display: OLED 1.54\" (SSD1309)    ║");
-    AK_LOG_INFO("Menu", "║  Learning: FTel Embedded Bootcamp  ║");
-    AK_LOG_INFO("Menu", "║                                    ║");
-    AK_LOG_INFO("Menu", "║  fetel@HCMUS                       ║");
-    AK_LOG_INFO("Menu", "║  KHOA ĐIỆN TỬ - VIỄN THÔNG       ║");
-    AK_LOG_INFO("Menu", "║                                    ║");
-    AK_LOG_INFO("Menu", "╚════════════════════════════════════╝");
-}
-
 /* ============================ Game Start Screen ============================== */
 void escape_menu_game_start_enter(void) {
     g_escape_game.current_state = MENU_STATE_GAME_START;
